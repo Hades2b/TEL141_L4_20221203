@@ -43,7 +43,9 @@ sudo sysctl -w net.ipv4.ip_forward=1 >/dev/null
 
 # --- 4. Política por defecto de FORWARD: DROP ---
 echo "[+] Estableciendo política FORWARD a DROP"
-sudo iptables -P FORWARD DROP
-sudo iptables -A FORWARD -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 
+sudo iptables -P FORWARD DROP
+if ! sudo iptables -C FORWARD -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT 2>/dev/null; then
+    sudo iptables -A FORWARD -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+fi
 echo "[OK] init_master.sh finalizado correctamente."
