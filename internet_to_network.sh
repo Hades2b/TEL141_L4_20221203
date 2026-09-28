@@ -24,8 +24,12 @@ fi
 
 echo "[i] Habilitando salida a Internet para VLAN $VLAN_ID (red $CIDR) vía $EXT_IFACE"
 # Reglas de FORWARD
-sudo iptables -A FORWARD -i "$GW_IFACE" -o "$EXT_IFACE" -j ACCEPT
+if ! sudo iptables -C FORWARD -i "$GW_IFACE" -o "$EXT_IFACE" -s "$CIDR" -j ACCEPT 2>/dev/null; then
+    sudo iptables -A FORWARD -i "$GW_IFACE" -o "$EXT_IFACE" -s "$CIDR" -j ACCEPT
+fi
 # Regla de NAT (MASQUERADE)
-sudo iptables -t nat -A POSTROUTING -s "$CIDR" -o "$EXT_IFACE" -j MASQUERADE
+if ! sudo iptables -t nat -C POSTROUTING -s "$CIDR" -o "$EXT_IFACE" -j MASQUERADE 2>/dev/null; then
+    sudo iptables -t nat -A POSTROUTING -s "$CIDR" -o "$EXT_IFACE" -j MASQUERADE
+fi
 
 echo "[OK] internet_to_network.sh finalizado para VLAN $VLAN_ID"

@@ -18,10 +18,10 @@ if [ "$VLAN_ID_1" = "$VLAN_ID_2" ]; then
 fi
 
 echo "[i] Eliminando enrutamiento entre VLAN $VLAN_ID_1 ($GW_IFACE_1) y VLAN $VLAN_ID_2 ($GW_IFACE_2)"
-if sudo iptables -C FORWARD -i "$GW_IFACE_1" -o "$GW_IFACE_2" -j ACCEPT 2>/dev/null; then
+while sudo iptables -C FORWARD -i "$GW_IFACE_1" -o "$GW_IFACE_2" -j ACCEPT 2>/dev/null; do
     sudo iptables -D FORWARD -i "$GW_IFACE_1" -o "$GW_IFACE_2" -j ACCEPT
 fi
-if sudo iptables -C FORWARD -i "$GW_IFACE_2" -o "$GW_IFACE_1" -j ACCEPT 2>/dev/null; then
+while sudo iptables -C FORWARD -i "$GW_IFACE_2" -o "$GW_IFACE_1" -j ACCEPT 2>/dev/null; do
     sudo iptables -D FORWARD -i "$GW_IFACE_2" -o "$GW_IFACE_1" -j ACCEPT
 fi
 

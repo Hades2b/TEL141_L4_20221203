@@ -25,7 +25,11 @@ for IFACE in "$GW_IFACE_1" "$GW_IFACE_2"; do
 done
 
 echo "[i] Habilitando enrutamiento entre VLAN $VLAN_ID_1 ($GW_IFACE_1) y VLAN $VLAN_ID_2 ($GW_IFACE_2)"
-sudo iptables -A FORWARD -i "$GW_IFACE_1" -o "$GW_IFACE_2" -j ACCEPT
-sudo iptables -A FORWARD -i "$GW_IFACE_2" -o "$GW_IFACE_1" -j ACCEPT
+if ! sudo iptables -C FORWARD -i "$GW_IFACE_1" -o "$GW_IFACE_2" -j ACCEPT 2>/dev/null; then
+    sudo iptables -A FORWARD -i "$GW_IFACE_1" -o "$GW_IFACE_2" -j ACCEPT
+fi
+if ! sudo iptables -C FORWARD -i "$GW_IFACE_2" -o "$GW_IFACE_1" -j ACCEPT 2>/dev/null; then
+    sudo iptables -A FORWARD -i "$GW_IFACE_2" -o "$GW_IFACE_1" -j ACCEPT
+fi
 
 echo "[OK] routing_networks.sh finalizado (VLAN $VLAN_ID_1 <-> VLAN $VLAN_ID_2)"
