@@ -16,10 +16,10 @@ echo "[i] Eliminando salida a Internet para VLAN $VLAN_ID (red $CIDR) vía $EXT_
 # Eliminar reglas de FORWARD
 while sudo iptables -C FORWARD -i "$GW_IFACE" -o "$EXT_IFACE" -s "$CIDR" -j ACCEPT 2>/dev/null; do
     sudo iptables -D FORWARD -i "$GW_IFACE" -o "$EXT_IFACE" -s "$CIDR" -j ACCEPT
-fi
+done
 # Eliminar regla de NAT (MASQUERADE)
 while sudo iptables -t nat -C POSTROUTING -s "$CIDR" -o "$EXT_IFACE" -j MASQUERADE 2>/dev/null; do
     sudo iptables -t nat -D POSTROUTING -s "$CIDR" -o "$EXT_IFACE" -j MASQUERADE
-fi
+done
 
 echo "[OK] no_internet_to_network.sh finalizado para VLAN $VLAN_ID"
